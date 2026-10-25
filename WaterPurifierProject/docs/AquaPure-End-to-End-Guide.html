@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AquaPure | End-to-End System and Deployment Guide</title>
+  <style>
+    :root {
+      --ink: #14232b;
+      --muted: #52666e;
+      --teal: #087e83;
+      --blue: #196b91;
+      --line: #cfdbdc;
+      --wash: #edf5f3;
+      --paper: #ffffff;
+      --code: #10232a;
+    }
+    * { box-sizing: border-box; }
+    html { background: #e7eeee; }
+    body {
+      max-width: 920px;
+      margin: 24px auto;
+      padding: 58px 68px 70px;
+      color: var(--ink);
+      background: var(--paper);
+      font: 10.5pt/1.56 "Segoe UI", Arial, sans-serif;
+      box-shadow: 0 8px 36px rgba(17, 45, 52, .12);
+    }
+    h1, h2, h3, h4 { color: var(--ink); line-height: 1.2; }
+    h1 { font-size: 29pt; margin: 0 0 12px; }
+    h2 {
+      margin: 34px 0 12px;
+      padding-bottom: 7px;
+      border-bottom: 2px solid var(--teal);
+      font-size: 19pt;
+      break-after: avoid;
+    }
+    h3 { margin: 22px 0 8px; font-size: 13pt; break-after: avoid; }
+    h4 { margin: 16px 0 6px; font-size: 10.5pt; }
+    p { margin: 7px 0 10px; }
+    ul, ol { margin: 6px 0 12px; padding-left: 22px; }
+    li { margin: 3px 0; }
+    a { color: var(--blue); text-decoration: none; }
+    code {
+      color: #0e5960;
+      background: #e9f2f1;
+      border-radius: 3px;
+      padding: 1px 4px;
+      font: 9pt Consolas, "Courier New", monospace;
+      overflow-wrap: anywhere;
+    }
+    pre {
+      margin: 9px 0 14px;
+      padding: 12px 14px;
+      color: #e7f4f2;
+      background: var(--code);
+      border-left: 4px solid #28a5a0;
+      border-radius: 4px;
+      font: 8.5pt/1.45 Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      break-inside: avoid;
+    }
+    pre code { color: inherit; background: transparent; padding: 0; }
+    table { width: 100%; margin: 10px 0 16px; border-collapse: collapse; font-size: 9pt; }
+    th, td { padding: 7px 8px; border: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { color: #17343b; background: var(--wash); }
+    .cover {
+      min-height: 890px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin: -58px -68px 42px;
+      padding: 84px 68px 62px;
+      color: #f2fbfa;
+      background: linear-gradient(145deg, #123844 0%, #087e83 62%, #2b8f88 100%);
+      break-after: page;
+    }
+    .cover h1 { max-width: 620px; color: white; font-size: 36pt; }
+    .cover p { max-width: 610px; color: #e0f3f0; font-size: 14pt; }
+    .cover .eyebrow { color: #a9e0d9; font-size: 10pt; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+    .cover .meta { color: #c5e6e1; font-size: 9.5pt; }
+    .cover-mark { width: 58px; height: 5px; background: #b8e5d8; }
+    .callout {
+      margin: 12px 0 16px;
+      padding: 11px 14px;
+      background: var(--wash);
+      border-left: 4px solid var(--teal);
+      break-inside: avoid;
+    }
+    .warning { background: #fff6e7; border-left-color: #d58a22; }
+    .critical { background: #fff0ef; border-left-color: #b54336; }
+    .small { color: var(--muted); font-size: 8.8pt; }
+    .toc { columns: 2; column-gap: 28px; }
+    .toc li { break-inside: avoid; }
+    .diagram { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 14px 0; }
+    .box {
+      min-height: 80px;
+      padding: 11px 13px;
+      border: 1px solid #b8cecc;
+      border-top: 4px solid var(--teal);
+      background: #f6faf9;
+      break-inside: avoid;
+    }
+    .box strong { display: block; margin-bottom: 4px; }
+    .arrow { margin: 3px 0; color: var(--teal); font-weight: 700; }
+    .page-break { break-before: page; }
+    .checklist li { list-style: square; }
+    .foot { margin-top: 28px; padding-top: 8px; border-top: 1px solid var(--line); color: var(--muted); font-size: 8pt; }
+    @page { size: A4; margin: 16mm 16mm 18mm; }
+    @media print {
+      html { background: white; }
+      body { max-width: none; margin: 0; padding: 0; box-shadow: none; font-size: 9.5pt; }
+      .cover { min-height: 265mm; margin: -16mm -16mm 0; padding: 24mm 20mm 20mm; }
+      a { color: inherit; }
+      h2 { margin-top: 24px; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div>
+      <div class="cover-mark"></div>
+      <p class="eyebrow">AquaPure Water Purifier Commerce Platform</p>
+      <h1>End-to-End System &amp; Deployment Guide</h1>
+      <p>From the architecture and Firebase data model to local development, Vercel APIs, Expo, Android builds, and push notification verification.</p>
+    </div>
+    <div>
+      <p class="meta"><strong>Workspace:</strong> WaterPurifierProject<br><strong>Platform:</strong> Firebase + Vercel + Expo / React Native<br><strong>Edition:</strong> Project-specific operations manual</p>
+      <p class="meta">Prepared from the current repository configuration and implementation.</p>
+    </div>
+  </section>
+
+  <h2>How to Use This Guide</h2>
+  <p>This manual explains the application that exists in this workspace, then walks through a clean setup and deployment. It is not a claim that a production environment has already been provisioned. You need your own Firebase project, Vercel project, service-account credentials, and Android build credentials.</p>
+  <div class="callout critical"><strong>Security rule:</strong> Never publish a Firebase service-account private key in source code, a mobile build, a browser variable, or a committed environment file. Only the Vercel server functions receive <code>FIREBASE_SERVICE_ACCOUNT_JSON</code>.</div>
+  <ol class="toc">
+    <li>System architecture</li><li>Repository map</li><li>Roles and user journeys</li>
+    <li>Firebase data and security</li><li>Prerequisites and Windows path</li>
+    <li>Provision Firebase</li><li>Configure environment variables</li>
+    <li>Run the admin app locally</li><li>Run the Expo mobile app</li>
+    <li>Deploy the admin/API to Vercel</li><li>Build and install Android</li>
+    <li>Push notification behavior</li><li>End-to-end verification</li>
+    <li>Troubleshooting</li><li>Operational limitations</li>
+  </ol>
+
+  <h2>1. System Architecture</h2>
+  <p>AquaPure has three runtime parts. The mobile application and admin website use Firebase's client SDK for sign-in and permitted Firestore operations. The Vercel project hosts the admin website and trusted serverless API routes. Those routes use Firebase Admin SDK credentials on the server for privileged operations and Firebase Cloud Messaging.</p>
+  <div class="diagram">
+    <div class="box"><strong>Android customer/dealer app</strong>Expo Router + React Native; Firebase Auth and Firestore client; native Android FCM token registration; checkout API calls.</div>
+    <div class="box"><strong>Admin website</strong>React + Vite + TypeScript; Firebase Auth; Firestore listeners and admin-authorized updates; invokes protected Vercel API routes.</div>
+    <div class="box"><strong>Firebase project</strong>Authentication, Cloud Firestore, Security Rules, Android app registration and Firebase Cloud Messaging.</div>
+    <div class="box"><strong>Vercel serverless API</strong><code>/api/create-order</code>, <code>/api/send-notification</code>, and <code>/api/seed-catalog</code>; Firebase Admin SDK validates identity and performs trusted work.</div>
+  </div>
+  <p class="arrow">Mobile app ── Firebase client SDK ──&gt; Firebase Auth / Firestore</p>
+  <p class="arrow">Mobile app ── Firebase ID token ──&gt; Vercel API ── Firebase Admin SDK ──&gt; Firestore</p>
+  <p class="arrow">Admin website ── Firebase Auth / Firestore ──&gt; admin data</p>
+  <p class="arrow">Admin website ── admin ID token ──&gt; Vercel notification API ── FCM ──&gt; Android device</p>
+  <div class="callout"><strong>Trust boundary:</strong> A Firebase client config (API key, project ID, app ID) identifies the project; it is not an authorization secret. Access is controlled by Firebase Authentication and Firestore Rules. The server service account is privileged and must remain private.</div>
+
+  <h3>Repository map</h3>
+  <table>
+    <thead><tr><th>Path</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><code>WaterPurifierProject/admin/src/</code></td><td>Admin Vite application, Firebase client integration, admin order/dealer/service UI.</td></tr>
+      <tr><td><code>WaterPurifierProject/admin/api/</code></td><td>Vercel serverless APIs for secure checkout, catalogue seeding, and FCM sends.</td></tr>
+      <tr><td><code>WaterPurifierProject/admin/server/firebaseAdmin.ts</code></td><td>Initializes Firebase Admin using server-only environment variables and verifies admin requests.</td></tr>
+      <tr><td><code>WaterPurifierProject/mobile/app/</code></td><td>Expo Router routes: authentication, dashboard, shop tabs, profile, and service booking.</td></tr>
+      <tr><td><code>WaterPurifierProject/mobile/services/</code></td><td>Firebase client, authentication, Firestore shop/order operations, and notifications.</td></tr>
+      <tr><td><code>WaterPurifierProject/mobile/app.json</code> and <code>app.config.js</code></td><td>Expo identity, Android package, plugins, and optional Android Firebase config file detection.</td></tr>
+      <tr><td><code>firestore.rules</code> at workspace root</td><td>Authoritative client database access rules. Publish the complete file to the matching Firebase project.</td></tr>
+      <tr><td><code>WaterPurifierProject/docs/</code></td><td>Setup, Firebase security, schema, testing, and this end-to-end guide.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Roles and User Journeys</h2>
+  <h3>Customer</h3>
+  <ol>
+    <li>Registers with email/password. The app creates a Firebase Auth identity and a <code>users/{uid}</code> profile with role <code>customer</code> and active account status.</li>
+    <li>Browses active Firestore products, adds items to a local cart, and enters delivery details.</li>
+    <li>Checkout sends product IDs and quantities to Vercel. The server verifies the Firebase ID token, recalculates prices and availability from Firestore, then writes the order transactionally.</li>
+    <li>Reads order/service history from Firestore. An order confirmation is shown locally; later status changes can trigger remote FCM.</li>
+  </ol>
+  <h3>Dealer</h3>
+  <ol>
+    <li>Registers as a dealer with business name and GST number. The user profile and dealer application begin in pending status.</li>
+    <li>An authenticated administrator reviews the application. The admin website updates the application and user profile; approval sets dealer/account status to approved/active.</li>
+    <li>After approval, the mobile app uses dealer pricing and server checkout enforces minimum order quantities.</li>
+  </ol>
+  <h3>Administrator</h3>
+  <p>Signs into the web portal with Firebase Authentication. Admin authority is established by a matching <code>admins/{uid}</code> record. The admin can seed an empty catalogue, manage products, approve dealer applications, update order/service statuses, and request a protected FCM send.</p>
+
+  <h2>3. Firebase Data and Security</h2>
+  <table>
+    <thead><tr><th>Collection</th><th>Purpose and access pattern</th></tr></thead>
+    <tbody>
+      <tr><td><code>users/{uid}</code></td><td>Profile, role, account/dealer state, addresses, and optional native push token. Owner reads their profile and may update allow-listed fields; admins can manage authorized profile data.</td></tr>
+      <tr><td><code>admins/{uid}</code></td><td>Trusted admin lookup. Provisioned manually through Firebase Console or a secure administrative process; client writes are denied.</td></tr>
+      <tr><td><code>products/{productId}</code></td><td>Live catalogue, prices and stock. Active products are readable to customers; writes are admin-only. The secure checkout API decrements stock.</td></tr>
+      <tr><td><code>dealerApplications/{appId}</code></td><td>Dealer application details and review status. Applicant creates/reads their application; admins review it.</td></tr>
+      <tr><td><code>orders/{orderId}</code></td><td>Customer/dealer orders. Owner and admin reads; client order creation is denied; trusted checkout API creates records; admins may update limited status/payment fields.</td></tr>
+      <tr><td><code>serviceBookings/{bookingId}</code></td><td>Customer service requests. Active customers create; owner/admin read; admins update the supported status and assignment fields.</td></tr>
+    </tbody>
+  </table>
+  <h3>Security rules model</h3>
+  <ul>
+    <li>The rules file begins with a default-deny catch-all and opens only explicit collection operations.</li>
+    <li>Authentication identifies the caller; the <code>admins</code> collection determines administrative access. Never let a client set its own admin role.</li>
+    <li>Client-side order creation is explicitly rejected. Checkout uses Firebase Admin on Vercel after validating the ID token, account role/status, cart, products, stock and dealer minimum.</li>
+    <li>Firebase Admin SDK bypasses Firestore client Rules. Every server endpoint must therefore validate identity and input in server code; do not treat Rules as a substitute for API authorization.</li>
+    <li>Prices use integer paise (100 paise = ₹1) to avoid floating-point rounding.</li>
+  </ul>
+  <div class="callout warning"><strong>Project alignment matters:</strong> Mobile Firebase config, admin Firebase config, Android <code>google-services.json</code>, Vercel <code>FIREBASE_PROJECT_ID</code>, and the service-account JSON must all refer to the same Firebase project.</div>
+
+  <h2>4. Prerequisites and Windows Setup</h2>
+  <ul>
+    <li>Node.js LTS compatible with the repository; Git; VS Code.</li>
+    <li>Firebase account/project and Vercel account.</li>
+    <li>For Android: a physical Android phone for FCM testing. Android Studio/SDK is optional if you build locally; EAS Build can build remotely.</li>
+    <li>For command-line deployment: Vercel account linked to the repository. For native APK distribution with Expo, an Expo account and EAS CLI.</li>
+  </ul>
+  <p>The workspace path contains an ampersand. The project setup notes recommend mapping the repository root to a drive letter to avoid Windows command quoting issues. Run once in PowerShell, selecting an unused drive:</p>
+  <pre><code>subst A: 'C:\Users\ELCOT\Downloads\aquapure---water-purifier-e-commerce-&amp;-admin'
+Set-Location A:\WaterPurifierProject</code></pre>
+  <p>If <code>A:</code> is already mapped, choose another unused letter. The mapping lasts for the Windows session. Use <code>npm.cmd</code> and <code>npx.cmd</code> in PowerShell when script execution policy blocks the PowerShell shims.</p>
+
+  <h2>5. Provision Firebase</h2>
+  <ol>
+    <li>Create or select one Firebase project. The repository docs currently reference project ID <code>waterpurifier-9f18a</code>; if you use another project, replace that ID consistently everywhere.</li>
+    <li>Enable Firebase Authentication and the Email/Password provider.</li>
+    <li>Create a Cloud Firestore database in the required mode/region.</li>
+    <li>Add a Firebase Web App. Copy its config values into the admin and mobile environment variables described below.</li>
+    <li>Add an Android app with package name <code>com.waterpurifier.ecommerce</code>. Download its <code>google-services.json</code> into <code>WaterPurifierProject/mobile/</code>. The current dynamic Expo config detects this file and adds it to Android config.</li>
+    <li>Enable Firebase Cloud Messaging for the project and make sure the backend service identity is permitted to send messages.</li>
+    <li>Publish the entire root <code>firestore.rules</code> in Firebase Console &gt; Firestore Database &gt; Rules. Do not replace it with a permissive test rule.</li>
+  </ol>
+  <h3>Provision the first administrator</h3>
+  <ol>
+    <li>Create the administrator's Firebase Auth account through the app's registration flow or Firebase Authentication.</li>
+    <li>Copy that account's UID from Firebase Authentication.</li>
+    <li>In Firestore Console, set the corresponding <code>users/{uid}</code> profile role to <code>admin</code> as a trusted console operation.</li>
+    <li>Create <code>admins/{uid}</code> with administrative metadata. The application does not permit client-side creation or modification of admin records.</li>
+  </ol>
+
+  <h2>6. Configure Environment Variables</h2>
+  <h3>Admin local environment</h3>
+  <p>Create <code>WaterPurifierProject/admin/.env.local</code> with the Firebase Web App settings:</p>
+  <pre><code>VITE_FIREBASE_API_KEY=your_web_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_web_app_id</code></pre>
+  <h3>Mobile local environment</h3>
+  <p>Create <code>WaterPurifierProject/mobile/.env</code> using the same Firebase Web App values and the deployed API origin:</p>
+  <pre><code>EXPO_PUBLIC_FIREBASE_API_KEY=your_web_api_key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+EXPO_PUBLIC_FIREBASE_APP_ID=your_web_app_id
+EXPO_PUBLIC_API_BASE_URL=https://your-vercel-domain.vercel.app</code></pre>
+  <p>Do not append a slash to <code>EXPO_PUBLIC_API_BASE_URL</code>. Values prefixed with <code>EXPO_PUBLIC_</code> are bundled into the mobile client and must not contain secrets.</p>
+  <h3>Vercel server environment</h3>
+  <p>Set these in Vercel Project Settings &gt; Environment Variables for the environments you deploy:</p>
+  <pre><code>VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_SERVICE_ACCOUNT_JSON={...service account JSON...}</code></pre>
+  <div class="callout critical"><strong>Do not add <code>FIREBASE_SERVICE_ACCOUNT_JSON</code> to an admin <code>VITE_*</code> variable or mobile <code>EXPO_PUBLIC_*</code> variable.</strong> It is a server secret only. Restrict who can view it in Vercel and rotate it if exposed.</div>
+
+  <h2>7. Run the Admin Website Locally</h2>
+  <pre><code>Set-Location A:\WaterPurifierProject\admin
+npm.cmd install
+npm.cmd run dev</code></pre>
+  <p>Open the local URL printed by Vite (the project script uses port <code>3000</code>). The admin interface uses Firebase client sign-in and Firestore. The Vite development server does <strong>not</strong> execute Vercel's <code>admin/api/</code> functions. For checkout/catalogue/notification APIs, use the deployed Vercel URL in mobile config, or run Vercel's local development server from the admin project after installing the Vercel CLI and configuring server credentials.</p>
+  <p>Before deploying, validate the admin app:</p>
+  <pre><code>npm.cmd run build</code></pre>
+  <p>The build runs TypeScript checking and Vite production bundling.</p>
+
+  <h2>8. Run the Expo Mobile App</h2>
+  <pre><code>Set-Location A:\WaterPurifierProject\mobile
+npm.cmd install
+npx.cmd expo start</code></pre>
+  <p>Scan the terminal QR code with Expo Go on a device on the same network, or press <code>a</code> if an Android emulator is configured. If port <code>8081</code> is already in use, accept Expo's prompt to use another port. Expo Go is useful for UI and basic app flows.</p>
+  <p>Check SDK dependency compatibility before native builds:</p>
+  <pre><code>npx.cmd expo install --check</code></pre>
+  <p>Resolve any reported package-version mismatches with Expo's installer before considering a production Android build. Local <code>.env</code> changes require restarting the Expo bundler.</p>
+
+  <h2>9. Deploy the Admin Website and API to Vercel</h2>
+  <ol>
+    <li>Push the repository to a Git provider accessible to Vercel.</li>
+    <li>In Vercel, import the repository. Set the project Root Directory to <code>WaterPurifierProject/admin</code>.</li>
+    <li>Confirm the Vercel build uses <code>npm run build</code> and output directory <code>dist</code>. The checked-in <code>vercel.json</code> configures the Vite build and SPA rewrite; <code>api/</code> files become serverless functions.</li>
+    <li>Add all six <code>VITE_FIREBASE_*</code> variables plus <code>FIREBASE_PROJECT_ID</code> and <code>FIREBASE_SERVICE_ACCOUNT_JSON</code>. Make sure the service account's project matches the client config and has the Firestore and FCM permissions required by the API.</li>
+    <li>Deploy. Open the Vercel deployment URL and verify the admin sign-in page loads.</li>
+    <li>Set mobile <code>EXPO_PUBLIC_API_BASE_URL</code> to the Vercel origin (no trailing slash). For cloud builds, also set public Firebase/API values in the EAS environment used by the build.</li>
+  </ol>
+  <p>Available server routes in the current project:</p>
+  <table>
+    <thead><tr><th>Route</th><th>Purpose</th><th>Caller</th></tr></thead>
+    <tbody>
+      <tr><td><code>POST /api/create-order</code></td><td>Validates Firebase identity and checkout payload; prices and stock are re-read server-side; order/address/stock updates are transactional and idempotent.</td><td>Signed-in mobile customer/dealer.</td></tr>
+      <tr><td><code>POST /api/send-notification</code></td><td>Looks up the recipient's saved device token and sends an FCM message after verifying the caller is an admin.</td><td>Admin website only.</td></tr>
+      <tr><td><code>POST /api/seed-catalog</code></td><td>Admin-authenticated sample catalogue import.</td><td>Admin website only; use when appropriate for an empty catalogue.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10. Build and Install Android</h2>
+  <p>The app's Android application ID is <code>com.waterpurifier.ecommerce</code>. Native push support requires an Android development/production build configured with the matching Firebase Android app and <code>google-services.json</code>; Expo Go does not provide this app's native FCM registration path.</p>
+  <h3>Build an internal APK with EAS</h3>
+  <ol>
+    <li>Install/login to EAS from the mobile project:</li>
+  </ol>
+  <pre><code>Set-Location A:\WaterPurifierProject\mobile
+npx.cmd eas-cli@latest login
+npx.cmd eas-cli@latest build:configure</code></pre>
+  <ol start="2"><li>Use or create an internal APK profile in <code>eas.json</code>:</li></ol>
+  <pre><code>{
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" }
+    }
+  }
+}</code></pre>
+  <ol start="3"><li>Ensure the cloud build receives the required environment values and Android Firebase config. The repo ignores local <code>.env*</code> and <code>google-services.json</code>; ignored files are not automatically available to EAS. Set public values in EAS. Include the Android config file in the private build input using a controlled <code>.easignore</code> strategy or EAS file variable; never commit secrets.</li>
+  <li>Build and install the generated APK:</li></ol>
+  <pre><code>npx.cmd eas-cli@latest build --platform android --profile preview</code></pre>
+  <p>Download the APK from the EAS build page, transfer it to the test phone, allow installation from that source, and install. Sign in and accept Android's notification permission prompt. Direct APK installation is different from publishing to Google Play.</p>
+
+  <h2>11. Push Notification Behavior</h2>
+  <ol>
+    <li>On a physical Android device in a native build, the mobile app requests notification permission, creates the <code>orders</code> channel, gets the native FCM device token, and writes <code>pushToken</code> and <code>pushTokenUpdatedAt</code> to the signed-in user's own profile.</li>
+    <li>Order placement and service booking currently show a local confirmation notification from the app.</li>
+    <li>When an admin updates an order, service booking, or dealer decision, the admin UI saves the Firestore change and calls <code>/api/send-notification</code>.</li>
+    <li>The API verifies the Firebase ID token and requires an <code>admins/{uid}</code> record, reads the recipient token, and sends via Firebase Admin Messaging.</li>
+  </ol>
+  <div class="callout warning"><strong>Important current behavior:</strong> The checkout endpoint does not send a remote push for a newly created order. A successful local order confirmation is separate from an admin-driven remote status notification. Failed sends are returned as errors; there is no retry queue, so a message missed because no token exists is not delivered later automatically.</div>
+
+  <h2>12. End-to-End Verification Checklist</h2>
+  <ul class="checklist">
+    <li>Admin and mobile clients show the same Firebase project ID; Vercel service account and Android app are in that project.</li>
+    <li>Firestore Rules are published from the full root <code>firestore.rules</code>; no test-mode allow-all rules remain.</li>
+    <li>Register a customer and verify a <code>users/{uid}</code> profile with active customer role/status.</li>
+    <li>Sign in on the installed Android build; grant notifications and confirm a non-empty <code>pushToken</code> in the user's Firestore document.</li>
+    <li>As an admin, import/create active products and verify mobile catalogue shows Firestore products.</li>
+    <li>Place a test COD order. Confirm one order document is created, prices are server-derived, stock decrements once, and a retry does not duplicate the order.</li>
+    <li>Change that order's status in admin. Confirm status/timeline updates and the device receives an FCM notification.</li>
+    <li>Submit a dealer application, register the dealer token in a native Android build, then approve it from admin and verify the status update and notification.</li>
+    <li>Book a service request, update its status in admin, and verify the corresponding remote message.</li>
+    <li>Review Vercel Function logs and Firebase Authentication/Firestore logs if an API call fails.</li>
+  </ul>
+
+  <h2>13. Troubleshooting</h2>
+  <table>
+    <thead><tr><th>Symptom</th><th>Likely cause and next check</th></tr></thead>
+    <tbody>
+      <tr><td>No push token appears</td><td>Expo Go, emulator, denied notification permission, no native Android config, or sign-in/profile failure. Use a physical device and native build; reopen the app and verify Firebase project/package match.</td></tr>
+      <tr><td>“No registered device token”</td><td>The remote push could not be sent. Register the user on an installed Android build before triggering the admin action. A previous failed send is not queued.</td></tr>
+      <tr><td>FCM project mismatch</td><td>Android <code>google-services.json</code> and Vercel service account/client Firebase config refer to different Firebase project IDs. Reconfigure and reinstall so the device gets a token from the right project.</td></tr>
+      <tr><td>Admin API returns 401/403</td><td>Admin ID token missing/expired or the caller UID has no <code>admins/{uid}</code> record. Confirm the admin is signed into the expected Firebase project.</td></tr>
+      <tr><td>Checkout API not configured</td><td>Mobile <code>EXPO_PUBLIC_API_BASE_URL</code> is missing, stale, or includes an incorrect origin. Restart/rebuild the app after changing build-time public values.</td></tr>
+      <tr><td>Checkout returns server error</td><td>Check Vercel environment variables, service-account JSON validity, Firestore IAM permissions, product data, and function logs.</td></tr>
+      <tr><td>Admin page loads but API is 404 locally</td><td>Vite alone serves the frontend, not Vercel functions. Use the deployed API URL or run the Vercel dev server.</td></tr>
+      <tr><td>Expo asks to use another port</td><td>The default Metro port is occupied. Accept another port and scan the new QR code from the same local network.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>14. Cost, Release, and Operational Limits</h2>
+  <ul>
+    <li>Firebase products have plan-specific quotas and billing rules. Review the current Firebase plan and usage before production traffic.</li>
+    <li>FCM message delivery does not have a per-message charge under standard Firebase Cloud Messaging use, but associated Firebase services and infrastructure remain subject to their plan/terms.</li>
+    <li>Vercel's free plan and EAS free build allowance have current limits and terms. Confirm eligibility, especially for commercial use, before relying on them for a business service.</li>
+    <li>Installing an APK directly can avoid Google Play distribution, but users must install updates manually. Google Play publishing requires a developer account and compliance with Play policies.</li>
+    <li>The checkout currently records Cash on Delivery and dealer-credit orders; it does not charge cards or integrate a payment provider.</li>
+    <li>Only physical/native Android testing proves the complete FCM path. TypeScript/build success alone cannot confirm Firebase credentials, OS permission state, or real device delivery.</li>
+  </ul>
+
+  <h2>15. Recommended Deployment Order</h2>
+  <ol>
+    <li>Create/configure Firebase and publish the complete Firestore Rules.</li>
+    <li>Bootstrap the first admin account and provision its <code>admins/{uid}</code> document.</li>
+    <li>Configure Vercel server secrets and deploy the admin website/API.</li>
+    <li>Configure local mobile Firebase/API values and verify sign-in against the deployed backend.</li>
+    <li>Add Android Firebase configuration, build/install the native APK, and register a token.</li>
+    <li>Seed the catalogue, place a test order, update status, and verify FCM delivery.</li>
+    <li>Only after the complete test passes, plan release, monitoring, backup, support, and billing controls.</li>
+  </ol>
+  <div class="foot">AquaPure project guide · Derived from the current repository implementation and setup documentation · Keep credentials outside this document.</div>
+</body>
+</html>

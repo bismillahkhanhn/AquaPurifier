@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="RO Purifiers">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070d18"/>
+      <stop offset="1" stop-color="#0c2537"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <circle cx="660" cy="120" r="210" fill="#22d3ee" opacity="0.10"/>
+  <circle cx="110" cy="500" r="170" fill="#2563eb" opacity="0.10"/>
+  <g opacity="0.14" stroke="#7dd3fc" stroke-width="1" fill="none">
+    <path d="M0 470 Q200 420 400 470 T800 470"/>
+    <path d="M0 510 Q200 460 400 510 T800 510"/>
+    <path d="M0 550 Q200 500 400 550 T800 550"/>
+  </g>
+  <g transform="translate(400 250)" filter="url(#glow)">
+    <path d="M0 -105 C45 -42 88 0 88 48 A88 88 0 0 1 -88 48 C-88 0 -45 -42 0 -105 Z" fill="url(#accent)"/>
+    <path d="M0 -74 C32 -28 62 2 62 44 A62 62 0 0 1 -62 44 C-62 2 -32 -28 0 -74 Z" fill="#0b1220" opacity="0.35"/>
+    <ellipse cx="-24" cy="20" rx="14" ry="26" fill="#ffffff" opacity="0.45" transform="rotate(-25 -24 20)"/>
+  </g>
+  <text x="400" y="418" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="36" font-weight="700" fill="#f8fafc">RO Purifiers</text>
+  <text x="400" y="456" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="18" fill="#7dd3fc" letter-spacing="1">AquaPure · Pure &amp; Mineralized Water</text>
+  <text x="400" y="548" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#64748b" letter-spacing="2">MULTI-STAGE PURIFICATION · ISO CERTIFIED</text>
+</svg>

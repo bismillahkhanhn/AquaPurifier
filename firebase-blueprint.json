@@ -1,0 +1,141 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role, contact info, and address book",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "phoneNumber": { "type": "string", "maxLength": 20 },
+        "role": { "type": "string", "enum": ["customer", "dealer", "admin"] },
+        "dealerStatus": { "type": "string", "enum": ["none", "pending", "approved", "rejected"] },
+        "accountStatus": { "type": "string", "enum": ["active", "pending", "suspended"] },
+        "companyName": { "type": "string", "maxLength": 150 },
+        "gstNumber": { "type": "string", "maxLength": 30 },
+        "savedAddresses": { "type": "array", "items": { "type": "object" } },
+        "pushToken": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Water purifier or component catalogue record with integer-paise pricing",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "maxLength": 200 },
+        "slug": { "type": "string", "maxLength": 250 },
+        "category": { "type": "string", "enum": ["ro_purifiers", "uv_purifiers", "gravity_filters", "commercial_ro", "spare_filters", "alkaline_units", "water_dispensers", "water_pumps"] },
+        "brand": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "sellingPricePaise": { "type": "integer" },
+        "dealerPricePaise": { "type": "integer" },
+        "dealerMinQuantity": { "type": "integer" },
+        "stockQuantity": { "type": "integer" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "specifications": { "type": "object" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "category", "brand", "sellingPricePaise", "dealerPricePaise", "dealerMinQuantity", "stockQuantity", "isActive"]
+    },
+    "DealerApplication": {
+      "title": "DealerApplication",
+      "description": "KYC application for wholesale dealer pricing",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "applicantName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "format": "email" },
+        "phoneNumber": { "type": "string", "maxLength": 20 },
+        "businessName": { "type": "string", "maxLength": 150 },
+        "gstNumber": { "type": "string", "maxLength": 30 },
+        "panNumber": { "type": "string", "maxLength": 20 },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "rejectionReason": { "type": "string", "maxLength": 500 },
+        "reviewedByAdminId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "businessName", "gstNumber", "status"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer retail COD or dealer wholesale order with historical price preservation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerEmail": { "type": "string" },
+        "customerPhone": { "type": "string", "maxLength": 20 },
+        "orderType": { "type": "string", "enum": ["customer_retail", "dealer_wholesale"] },
+        "itemsCount": { "type": "integer" },
+        "subtotalPaise": { "type": "integer" },
+        "taxPaise": { "type": "integer" },
+        "deliveryFeePaise": { "type": "integer" },
+        "totalAmountPaise": { "type": "integer" },
+        "paymentMethod": { "type": "string", "enum": ["cash_on_delivery", "dealer_credit", "bank_transfer"] },
+        "paymentStatus": { "type": "string", "enum": ["pending", "collected", "refunded"] },
+        "orderStatus": { "type": "string", "enum": ["pending", "confirmed", "processing", "shipped", "out_for_delivery", "delivered", "cancelled"] },
+        "serviceRequested": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "orderNumber", "customerId", "orderType", "totalAmountPaise", "orderStatus"]
+    },
+    "ServiceBooking": {
+      "title": "ServiceBooking",
+      "description": "Water purifier installation, cartridge replacement, or maintenance request",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "bookingNumber": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 20 },
+        "serviceType": { "type": "string", "enum": ["new_installation", "filter_cartridge_replacement", "leakage_repair", "tds_health_check", "annual_maintenance"] },
+        "preferredDate": { "type": "string" },
+        "preferredTimeSlot": { "type": "string", "enum": ["morning", "afternoon", "evening"] },
+        "status": { "type": "string", "enum": ["booked", "assigned", "technician_en_route", "completed", "cancelled"] },
+        "serviceCostPaise": { "type": "integer" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "bookingNumber", "customerId", "serviceType", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles with strict access isolation and immutable roles"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Product catalogue with integer paise prices. Publicly readable, admin writable."
+    },
+    "/dealerApplications/{appId}": {
+      "schema": "DealerApplication",
+      "description": "Dealer KYC applications. Created by user, reviewed only by admin."
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Owner/admin-readable orders created only by the authenticated server checkout API, with server-calculated prices and transactional stock decrements."
+    },
+    "/serviceBookings/{bookingId}": {
+      "schema": "ServiceBooking",
+      "description": "Installation and maintenance booking records."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "User" },
+      "description": "Trusted admin lookup table."
+    }
+  }
+}

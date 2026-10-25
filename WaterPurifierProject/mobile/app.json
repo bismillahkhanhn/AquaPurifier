@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "AquaPure",
+    "slug": "aquapure-water-purifier",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0284c7"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aquapure.customer"
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0284c7"
+      },
+      "package": "com.waterpurifier.ecommerce",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "orders",
+          "color": "#22d3ee"
+        }
+      ]
+    ],
+    "scheme": "aquapure"
+  }
+}

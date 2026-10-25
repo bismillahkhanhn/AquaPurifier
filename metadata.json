@@ -1,0 +1,6 @@
+{
+  "name": "AquaPure - Water Purifier E-Commerce & Admin",
+  "description": "Enterprise Water Purifier E-Commerce System featuring Customer portal, Dealer wholesale network, and Admin control panel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

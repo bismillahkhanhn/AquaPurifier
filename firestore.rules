@@ -1,0 +1,156 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Default-Deny Catch-All (First rule block)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isCustomer() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'customer' &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountStatus == 'active';
+    }
+
+    function canBookService() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountStatus == 'active' &&
+        (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'customer' ||
+          (
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'dealer' &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.dealerStatus == 'approved'
+          )
+        );
+    }
+
+    // Product Catalogue (Public Read, Admin Write)
+    match /products/{productId} {
+      allow get, list: if isAdmin() || resource.data.isActive == true;
+      allow create: if isAdmin() && isValidId(productId) &&
+        request.resource.data.name is string && request.resource.data.name.size() <= 200 &&
+        request.resource.data.sellingPricePaise is int && request.resource.data.sellingPricePaise > 0 &&
+        request.resource.data.dealerPricePaise is int &&
+        request.resource.data.dealerPricePaise > 0 &&
+        request.resource.data.dealerPricePaise <= request.resource.data.sellingPricePaise &&
+        request.resource.data.dealerMinQuantity is int && request.resource.data.dealerMinQuantity > 0 &&
+        request.resource.data.stockQuantity is int && request.resource.data.stockQuantity >= 0 &&
+        request.resource.data.isActive is bool;
+      allow update: if isAdmin() && isValidId(productId) &&
+        request.resource.data.name is string &&
+        request.resource.data.sellingPricePaise is int && request.resource.data.sellingPricePaise > 0 &&
+        request.resource.data.dealerPricePaise is int &&
+        request.resource.data.dealerPricePaise > 0 &&
+        request.resource.data.dealerPricePaise <= request.resource.data.sellingPricePaise &&
+        request.resource.data.dealerMinQuantity is int && request.resource.data.dealerMinQuantity > 0 &&
+        request.resource.data.stockQuantity is int && request.resource.data.stockQuantity >= 0 &&
+        request.resource.data.isActive is bool;
+      allow delete: if isAdmin() && isValidId(productId);
+    }
+
+    // User Profiles (Private PII Isolation, Non-self-assignable Roles)
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidId(userId) &&
+        request.resource.data.uid == userId &&
+        request.resource.data.keys().hasOnly([
+          'uid', 'email', 'displayName', 'name', 'phoneNumber',
+          'role', 'dealerStatus', 'accountStatus', 'companyName',
+          'gstNumber', 'savedAddresses', 'createdAt', 'updatedAt'
+        ]) &&
+        request.resource.data.email is string &&
+        request.resource.data.displayName is string &&
+        request.resource.data.role in ['customer', 'dealer'] &&
+        (request.resource.data.role == 'dealer'
+          ? request.resource.data.dealerStatus == 'pending' &&
+            request.resource.data.accountStatus == 'pending'
+          : request.resource.data.dealerStatus == 'none' &&
+            request.resource.data.accountStatus == 'active');
+      allow update: if (isOwner(userId) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName',
+          'name',
+          'phoneNumber',
+          'savedAddresses',
+          'pushToken',
+          'pushTokenUpdatedAt',
+          'updatedAt'
+        ])) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Dealer KYC Applications
+    match /dealerApplications/{appId} {
+      allow get: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow list: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow create: if isSignedIn() && isValidId(appId) &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.businessName is string && request.resource.data.businessName.size() <= 150 &&
+        request.resource.data.gstNumber is string && request.resource.data.gstNumber.size() <= 30;
+      allow update: if isAdmin(); // Only admins can approve or reject
+      allow delete: if isAdmin();
+    }
+
+    // Orders Collection (Customer Retail & Dealer Wholesale)
+    match /orders/{orderId} {
+      allow get: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow list: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow create: if false; // Orders must be created by the trusted checkout API.
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'orderStatus', 'statusTimeline', 'updatedAt', 'paymentStatus', 'notes'
+        ]) &&
+        request.resource.data.orderStatus in [
+          'pending', 'confirmed', 'processing', 'shipped',
+          'out_for_delivery', 'delivered', 'cancelled'
+        ] &&
+        request.resource.data.paymentStatus in ['pending', 'collected', 'refunded'];
+      allow delete: if isAdmin();
+    }
+
+    // Service Bookings (Installation & Maintenance)
+    match /serviceBookings/{bookingId} {
+      allow get: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow list: if (isSignedIn() && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow create: if isSignedIn() && isValidId(bookingId) &&
+        request.resource.data.customerId == request.auth.uid &&
+        request.resource.data.status == 'booked' &&
+        canBookService();
+      allow update: if isAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status', 'updatedAt', 'assignedTechnician', 'completionNotes'
+        ]) &&
+        request.resource.data.status in [
+          'booked', 'assigned', 'technician_en_route', 'completed', 'cancelled'
+        ];
+      allow delete: if isAdmin();
+    }
+
+    // Admin Lookup Collection
+    match /admins/{adminId} {
+      allow get: if isOwner(adminId) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update, delete: if false;
+    }
+  }
+}

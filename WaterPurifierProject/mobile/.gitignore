@@ -1,0 +1,9 @@
+node_modules/
+.expo/
+dist/
+dist-web/
+web-build/
+*.log
+.env*
+!.env.example
+google-services.json
