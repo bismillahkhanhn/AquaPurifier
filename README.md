@@ -41,6 +41,14 @@ npm install
 npx expo start
 ```
 
+## Notifications
+
+For a manual notification test, the admin must be signed in and use the admin portal to change an order or service status. The customer must have opened the installed Android development build at least once, signed in to the same account that owns the order or booking, and granted notification permission so the app can save its Firebase device token.
+
+Both screens do **not** need to remain open for remote notifications. Android should receive status notifications while AquaPure is in the background, provided notifications are enabled and the app has not been force-stopped or restricted by device battery settings. A heads-up banner is controlled by Android notification/channel settings; the notification may appear only in the notification shade.
+
+To test: register the device token, press Home to background AquaPure (do not force-stop it), then change the relevant order or service status in the admin portal. New order placement currently shows a local confirmation; remote notifications are sent when an admin changes a status. If messages appear only while the app is open, check Android's AquaPure notification and `Orders and service` channel settings.
+
 ## Deployment Guide
 
 See [`WaterPurifierProject/docs/AquaPure-End-to-End-Guide.html`](WaterPurifierProject/docs/AquaPure-End-to-End-Guide.html) for the full Firebase, Vercel, Expo, Android build, and notification walkthrough.

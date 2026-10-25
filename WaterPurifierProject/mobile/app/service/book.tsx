@@ -38,10 +38,34 @@ const TIME_SLOTS: { key: ServiceBooking['preferredTimeSlot']; label: string }[] 
   { key: 'evening', label: 'Evening (4 PM - 7 PM)' },
 ];
 
+function formatLocalDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function defaultDate() {
   const date = new Date();
+  date.setHours(0, 0, 0, 0);
   date.setDate(date.getDate() + 3);
-  return date.toISOString().slice(0, 10);
+  return formatLocalDate(date);
+}
+
+function isFutureDate(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  const selectedDate = new Date(year, month - 1, day);
+  if (
+    selectedDate.getFullYear() !== year ||
+    selectedDate.getMonth() !== month - 1 ||
+    selectedDate.getDate() !== day
+  ) {
+    return false;
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return selectedDate > today;
 }
 
 export default function BookServiceScreen() {
@@ -67,8 +91,7 @@ export default function BookServiceScreen() {
   );
   const isValid =
     purifierModel.trim().length > 2 &&
-    /^\d{4}-\d{2}-\d{2}$/.test(preferredDate.trim()) &&
-    new Date(`${preferredDate}T00:00:00`).getTime() > Date.now() &&
+    isFutureDate(preferredDate.trim()) &&
     addressLine.trim().length > 5 &&
     canBookService;
 
